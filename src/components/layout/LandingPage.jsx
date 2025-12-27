@@ -1,7 +1,7 @@
 import React from 'react';
 import { ArrowRight, Mic, Volume2, Phone } from 'lucide-react';
 
-function LandingPage({ onGetStarted }) {
+function LandingPage({ onGetStarted, onLoginClick }) {
     return (
         <div className="min-h-screen bg-black text-white flex flex-col relative overflow-hidden font-sans selection:bg-blue-500/30">
 
@@ -10,12 +10,20 @@ function LandingPage({ onGetStarted }) {
             <div className="absolute bottom-[-20%] right-[-10%] w-[600px] h-[600px] bg-purple-600/20 rounded-full blur-[120px] pointer-events-none" />
 
             {/* Navbar Placeholder */}
-            <nav className="p-6 flex justify-between items-center z-10">
+            <nav className="p-6 flex justify-between items-center z-50 relative">
                 <div className="text-2xl font-bold tracking-tighter flex items-center gap-2">
                     <div className="w-8 h-8 bg-white text-black rounded-lg flex items-center justify-center font-bold">V</div>
                     Vaani
                 </div>
-                <div className="text-sm text-gray-400">v1.0.0</div>
+                <div className="flex items-center gap-4">
+                    <button
+                        onClick={onLoginClick}
+                        className="px-4 py-2 text-sm font-medium text-gray-300 hover:text-white transition-colors"
+                    >
+                        Login
+                    </button>
+                    <div className="text-sm text-gray-400">v1.0.0</div>
+                </div>
             </nav>
 
             {/* Hero Section */}

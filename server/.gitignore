@@ -3,3 +3,18 @@ node_modules/
 .env
 npm-debug.log
 .DS_Store
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCdpXoKAOY8-Lb_PvAjBhxIt4iJCoBmXy8",
+  authDomain: "vaani-859ba.firebaseapp.com",
+  projectId: "vaani-859ba",
+  appId: "1:79482367582:web:d595077a4884ffbfa90ecf"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+
+// Firebase Authentication
+export const auth = getAuth(app);

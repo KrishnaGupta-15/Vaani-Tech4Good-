@@ -6,9 +6,11 @@ import ChatInput from './components/chat/ChatInput';
 import LiveTranscribe from './components/features/LiveTranscribe';
 import SettingsDrawer from './components/layout/SettingsDrawer';
 import LandingPage from './components/layout/LandingPage';
+import LoginForm from './components/AuthForm/LoginForm';
 
 function App() {
   const [showLanding, setShowLanding] = useState(true);
+  const [showLogin, setShowLogin] = useState(false);
   const [language, setLanguage] = useState('English');
   const [showCallMode, setShowCallMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
@@ -36,6 +38,7 @@ function App() {
 
     return `${base} ${sizeMap[fontSize]}`;
   };
+
   const [messages, setMessages] = useState([
     { id: 1, text: "नमस्ते! मैं आपकी कैसे मदद कर सकता हूँ?", isSender: false },
     { id: 2, text: "Hello! I am deaf. This app converts my text to speech.", isSender: true },
@@ -54,8 +57,31 @@ function App() {
     setMessages((prev) => [...prev, newMessage]);
   };
 
+  if (showLogin) {
+    return (
+      <LoginForm
+        onBack={() => {
+          setShowLogin(false);
+          setShowLanding(true);
+        }}
+        onLoginSuccess={() => {
+          setShowLogin(false);
+          setShowLanding(false);
+        }}
+      />
+    );
+  }
+
   if (showLanding) {
-    return <LandingPage onGetStarted={() => setShowLanding(false)} />;
+    return (
+      <LandingPage
+        onGetStarted={() => setShowLanding(false)}
+        onLoginClick={() => {
+          setShowLanding(false);
+          setShowLogin(true);
+        }}
+      />
+    );
   }
 
   return (
@@ -86,6 +112,10 @@ function App() {
         onToggleCallMode={() => setShowCallMode(true)}
         onOpenSettings={() => setShowSettings(true)}
         highContrast={highContrast} // Pass theme
+        onLogoClick={() => {
+          setShowLanding(true);
+          setShowLogin(false);
+        }}
       />
 
       {/* 2. The Chat Area (Middle) */}
