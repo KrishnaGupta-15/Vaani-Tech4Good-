@@ -1,8 +1,55 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
+
 
 export default function LoginForm({ onBack, onLoginSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleAuth = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      let userCredential;
+
+      if (isLogin) {
+        // LOGIN
+        userCredential = await signInWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      } else {
+        // SIGNUP
+        if (password !== confirmPassword) {
+          alert("Passwords do not match");
+          setLoading(false);
+          return;
+        }
+
+        userCredential = await createUserWithEmailAndPassword(
+          auth,
+          email,
+          password
+        );
+      }
+
+      const token = await userCredential.user.getIdToken();
+      localStorage.setItem("token", token);
+
+      onLoginSuccess(); // redirect to main app
+    } catch (error) {
+      alert(error.message);
+    }
+
+    setLoading(false);
+  };
 
   return (
     <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 selection:bg-blue-500/30">
@@ -33,7 +80,7 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
           </div>
 
           {/* Form */}
-          <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onLoginSuccess(); }}>
+          <form className="space-y-4" onSubmit={ handleAuth }>
 
             <div className="space-y-4">
               <div className="relative">
@@ -41,6 +88,9 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                 <input
                   type="email"
                   placeholder="Email address"
+                  value={email}
+                  onChange={(e)=>setEmail(e.target.value)}
+                  required
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
               </div>
@@ -50,6 +100,9 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                 <input
                   type="password"
                   placeholder="Password"
+                  value={password}
+                  onChange={(e)=>setPassword(e.target.value)}
+                  required
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
               </div>
@@ -60,6 +113,9 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                   <input
                     type="password"
                     placeholder="Confirm Password"
+                    value={confirmPassword}
+                    onChange={(e)=>setConfirmPassword(e.target.value)}
+                    required
                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                   />
                 </div>
@@ -74,8 +130,15 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
               </div>
             )}
 
-            <button className="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
-              {isLogin ? 'Sign In' : 'Sign Up'}
+            <button 
+              disabled={loading}
+              className="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+              {loading
+                ? "Please wait..."
+                : isLogin
+                ?"Sign In"
+                : "Sign Up"}
+              {/* {isLogin ? 'Sign In' : 'Sign Up'} */}
             </button>
           </form>
 

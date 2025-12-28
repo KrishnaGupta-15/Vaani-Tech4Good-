@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import {GoogleGenAI} from "@google/genai";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -8,7 +9,7 @@ import {verifyToken} from '../config/firebase.js';
 const router = express.Router();
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
-router.post('/generate', verifyToken, async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
     try{
         const {text} =req.body;
         if(!text){

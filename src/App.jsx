@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import Header from './components/layout/Header';
 import ChatBubble from './components/chat/ChatBubble';
 import ChatInput from './components/chat/ChatInput';
@@ -8,12 +8,30 @@ import SettingsDrawer from './components/layout/SettingsDrawer';
 import LandingPage from './components/layout/LandingPage';
 import LoginForm from './components/AuthForm/LoginForm';
 
+
 function App() {
   const [showLanding, setShowLanding] = useState(true);
   const [showLogin, setShowLogin] = useState(false);
   const [language, setLanguage] = useState('English');
   const [showCallMode, setShowCallMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+
+
+// check
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  fetch("http://localhost:4000/api/protected", {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  })
+    .then(res => res.json())
+    .then(data => console.log(data));
+}, []);
+//check end
 
   // Accessibility State
   const [fontSize, setFontSize] = useState('medium'); // small, medium, large, xl
