@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Send, AlertCircle } from 'lucide-react';
 import { getLanguageCode } from '../../utils/languages';
-
+import {sendToGemini} from "../../utils/geminiClient";
 function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
     const [inputValue, setInputValue] = useState("");
     const [isListening, setIsListening] = useState(false);
@@ -79,14 +79,39 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
         }
     }, [currentLanguage]);
 
-    const handleSend = () => {
-        if (inputValue.trim()) {
-            if (onSendMessage) {
-                onSendMessage(inputValue);
-            }
-            setInputValue("");
+    // const handleSend = () => {
+    //     if (inputValue.trim()) {
+    //         if (onSendMessage) {
+    //             onSendMessage(inputValue);
+    //         }
+    //         setInputValue("");
+    //     }
+    // };
+    
+    const handleSend = async () => {
+    if (!inputValue.trim()) return;
+
+    const userText = inputValue;
+    setInputValue("");
+
+    
+    if (onSendMessage) {
+        onSendMessage(userText);
+    }
+
+    try {
+        
+        const geminiReply = await sendToGemini(userText);
+
+    
+        if (onSendMessage) {
+            onSendMessage(geminiReply, false); 
         }
-    };
+    } catch (err) {
+        console.error("Gemini failed", err);
+    }
+};
+
 
     const toggleMic = () => {
         if (!recognitionRef.current) return;

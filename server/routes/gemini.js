@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import {GoogleGenAI} from "@google/genai";
 import dotenv from 'dotenv';
 dotenv.config();
@@ -9,17 +8,25 @@ import {verifyToken} from '../config/firebase.js';
 const router = express.Router();
 const genAI = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
 
+
+
 router.post('/', verifyToken, async (req, res) => {
     try{
+        console.log("Gemini request received");
+
         const {text} =req.body;
         if(!text){
             return res.status(400).json({error: 'Text is required' });
         }
 
         const prompt =`
-        Correct grammar,
-        normalize Indian dialect,
-        and simplify this sentence for clear communication:
+        
+        Your tasks:
+        1. Correct spelling and grammar
+        2. Normalize Indian-English or informal phrases
+
+        Return only the refined response text without additional commentary.
+        User input:
         "${text}"
         `;
 
