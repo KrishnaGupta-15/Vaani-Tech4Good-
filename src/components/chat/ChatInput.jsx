@@ -95,10 +95,7 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
     setInputValue("");
 
     
-    if (onSendMessage) {
-        onSendMessage(userText);
-    }
-
+        onSendMessage(userText,true);
     try {
         
         const geminiReply = await sendToGemini(userText);

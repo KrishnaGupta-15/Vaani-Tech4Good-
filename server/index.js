@@ -16,8 +16,8 @@ app.use(cors({
 
 
 
-import dbConnect from './config/database.js';
-dbConnect();
+// import dbConnect from './config/database.js';
+// dbConnect();
 
 //Mount routes
 import protectedRoutes from './routes/protected.js';
@@ -28,6 +28,15 @@ app.use('/api/gemini', geminiRoutes);
 
 import translateRoutes from './routes/translate.js';
 app.use('/api/translate',translateRoutes);
+
+import historyRoutes from './routes/history.js';
+app.use('/api/history',historyRoutes);
+
+import deleteAllHistoryRoutes from './routes/deleteAll.js';
+app.use('/api/deleteAllHistory',deleteAllHistoryRoutes);
+
+import deleteMessageRoutes from './routes/deleteMessage.js';
+app.use('/api/deleteMessage',deleteMessageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
