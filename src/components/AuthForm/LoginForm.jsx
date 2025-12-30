@@ -15,6 +15,12 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
     e.preventDefault();
     setLoading(true);
 
+    if (!auth) {
+      alert("Authentication is not configured. Please check your API keys in the .env file.");
+      setLoading(false);
+      return;
+    }
+
     try {
       let userCredential;
 
@@ -80,7 +86,7 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
           </div>
 
           {/* Form */}
-          <form className="space-y-4" onSubmit={ handleAuth }>
+          <form className="space-y-4" onSubmit={handleAuth}>
 
             <div className="space-y-4">
               <div className="relative">
@@ -89,7 +95,7 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                   type="email"
                   placeholder="Email address"
                   value={email}
-                  onChange={(e)=>setEmail(e.target.value)}
+                  onChange={(e) => setEmail(e.target.value)}
                   required
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
@@ -101,7 +107,7 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                   type="password"
                   placeholder="Password"
                   value={password}
-                  onChange={(e)=>setPassword(e.target.value)}
+                  onChange={(e) => setPassword(e.target.value)}
                   required
                   className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                 />
@@ -114,7 +120,7 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
                     type="password"
                     placeholder="Confirm Password"
                     value={confirmPassword}
-                    onChange={(e)=>setConfirmPassword(e.target.value)}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
                     required
                     className="w-full bg-black/40 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-gray-200 placeholder:text-gray-600 focus:outline-none focus:border-blue-500/50 focus:ring-1 focus:ring-blue-500/50 transition-all"
                   />
@@ -130,14 +136,14 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
               </div>
             )}
 
-            <button 
+            <button
               disabled={loading}
               className="w-full bg-white text-black font-bold py-3.5 rounded-xl hover:scale-[1.02] active:scale-[0.98] transition-all shadow-[0_0_20px_rgba(255,255,255,0.1)]">
               {loading
                 ? "Please wait..."
                 : isLogin
-                ?"Sign In"
-                : "Sign Up"}
+                  ? "Sign In"
+                  : "Sign Up"}
               {/* {isLogin ? 'Sign In' : 'Sign Up'} */}
             </button>
           </form>

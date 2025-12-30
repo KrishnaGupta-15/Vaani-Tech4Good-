@@ -2,7 +2,7 @@ import React from 'react';
 import { Phone, Settings } from 'lucide-react';
 import { LANGUAGES } from '../../utils/languages';
 
-function Header({ currentLanguage, onLanguageChange, onToggleCallMode, onOpenSettings, highContrast, onLogoClick }) {
+function Header({ currentLanguage, onLanguageChange, onToggleCallMode, onOpenSettings, highContrast, onLogoClick, user }) {
     return (
         <div className={`border-b p-4 flex justify-between items-center shadow-sm sticky top-0 z-10 transition-colors duration-300 ${highContrast ? 'bg-black border-yellow-400/30' : 'bg-white border-gray-200'
             }`}>
@@ -26,6 +26,19 @@ function Header({ currentLanguage, onLanguageChange, onToggleCallMode, onOpenSet
 
             {/* Right Side: Call Mode & Language */}
             <div className="flex items-center gap-2">
+                {/* User Avatar */}
+                {user && (
+                    <div
+                        className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm mr-2 shadow-sm ${highContrast
+                            ? 'bg-yellow-400 text-black'
+                            : 'bg-blue-600 text-white'
+                            }`}
+                        title={user.email}
+                    >
+                        {user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                    </div>
+                )}
+
                 {/* Settings Button */}
                 <button
                     onClick={onOpenSettings}

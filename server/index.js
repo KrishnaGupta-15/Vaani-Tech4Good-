@@ -5,13 +5,13 @@ const app = express();
 import dotenv from 'dotenv';
 dotenv.config();
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 4000;
 
 app.use(express.json());
 
 app.use(cors({
-  origin:"http://localhost:5173",
-  credentials:true,
+  origin: "http://localhost:5173",
+  credentials: true,
 }));
 
 
@@ -27,16 +27,16 @@ import geminiRoutes from './routes/gemini.js';
 app.use('/api/gemini', geminiRoutes);
 
 import translateRoutes from './routes/translate.js';
-app.use('/api/translate',translateRoutes);
+app.use('/api/translate', translateRoutes);
 
 import historyRoutes from './routes/history.js';
-app.use('/api/history',historyRoutes);
+app.use('/api/history', historyRoutes);
 
 import deleteAllHistoryRoutes from './routes/deleteAll.js';
-app.use('/api/deleteAllHistory',deleteAllHistoryRoutes);
+app.use('/api/deleteAllHistory', deleteAllHistoryRoutes);
 
 import deleteMessageRoutes from './routes/deleteMessage.js';
-app.use('/api/deleteMessage',deleteMessageRoutes);
+app.use('/api/deleteMessage', deleteMessageRoutes);
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);

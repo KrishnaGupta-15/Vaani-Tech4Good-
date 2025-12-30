@@ -4,7 +4,7 @@ import { verifyToken } from "../config/firebase.js";
 
 const router = express.Router();
 
-router.post("/", verifyToken, async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { text, targetLang } = req.body;
 
