@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Send, AlertCircle } from 'lucide-react';
 import { getLanguageCode } from '../../utils/languages';
-import {sendToGemini} from "../../utils/geminiClient";
+import { sendToGemini } from "../../utils/geminiClient";
 function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
     const [inputValue, setInputValue] = useState("");
     const [isListening, setIsListening] = useState(false);
@@ -87,28 +87,31 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
     //         setInputValue("");
     //     }
     // };
-    
+
     const handleSend = async () => {
-    if (!inputValue.trim()) return;
+        if (!inputValue.trim()) return;
 
-    const userText = inputValue;
-    setInputValue("");
+        const userText = inputValue;
+        setInputValue("");
 
-    
-        onSendMessage(userText,true);
-    try {
-        
-        const geminiReply = await sendToGemini(userText);
-
-    
-        if (onSendMessage) {
-            onSendMessage(geminiReply, false); 
+        try {
+            if (onSendMessage) {
+                onSendMessage(userText, true);
+            }
+        } catch (e) {
+            console.error("Error in onSendMessage prop:", e);
         }
-    } catch (err) {
-        console.error("Gemini failed", err);
-    }
-};
 
+        try {
+            const geminiReply = await sendToGemini(userText);
+
+            if (onSendMessage) {
+                onSendMessage(geminiReply, false);
+            }
+        } catch (err) {
+            console.error("Gemini failed", err);
+        }
+    };
 
     const toggleMic = () => {
         if (!recognitionRef.current) return;
@@ -169,8 +172,8 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
                     onClick={handleSend}
                     disabled={!inputValue.trim()}
                     className={`p-3 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed ${highContrast
-                            ? 'text-yellow-400 hover:bg-gray-800'
-                            : 'text-blue-600 hover:bg-blue-50'
+                        ? 'text-yellow-400 hover:bg-gray-800'
+                        : 'text-blue-600 hover:bg-blue-50'
                         }`}
                     title="Send"
                 >
