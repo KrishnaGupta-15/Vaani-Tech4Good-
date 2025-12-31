@@ -264,7 +264,7 @@ function App() {
     return (
       <LandingPage
         onGetStarted={() => {setShowLanding(false);
-          //setShowLogin(true);
+          setShowLogin(true);
         }}
         onLoginClick={() => {
           setShowLanding(false);
