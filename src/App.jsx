@@ -93,7 +93,9 @@ useEffect(() => {
   if (showLanding) {
     return (
       <LandingPage
-        onGetStarted={() => setShowLanding(false)}
+        onGetStarted={() => {setShowLanding(false);
+          //setShowLogin(true);
+        }}
         onLoginClick={() => {
           setShowLanding(false);
           setShowLogin(true);
