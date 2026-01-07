@@ -31,9 +31,19 @@ router.post('/', verifyToken, async (req, res) => {
         
         Your tasks:
         1. Correct spelling and grammar
-        2. Normalize Indian-English or informal phrases
-
-        Return only the refined response text without additional commentary.
+        2. Normalize Indian-English or informal phrases into standard , neutral english.
+        
+        Strict rules:
+        -Preserve the original meaning exactly
+        - Do not add new information
+        -Do not remove information
+        -Do not rephrase beyond what is neccessary for correctness
+        -Do not change tone unless required for clarity
+        -if a sentence is unclear, keep it as it as close to the original as possible
+        - Do not change sentence structure unless grammatically incorrect
+        - Do not replace words unless they are incorrect or informal
+        Return only the refined response text.
+        No explanations.No commentary.
         User input:
         "${text}"
         `;
