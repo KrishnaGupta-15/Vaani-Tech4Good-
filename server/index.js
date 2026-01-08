@@ -42,7 +42,7 @@ import deleteMessageRoutes from './routes/deleteMessage.js';
 app.use('/api/deleteMessage', deleteMessageRoutes);
 
 app.use((err,req,res,next)=>{
-  console.errror("Unhandled error:", err);
+  console.error("Unhandled error:", err);
   res.status(500).json({error:"Internal server error"});
 });
 

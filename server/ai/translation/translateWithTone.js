@@ -47,7 +47,7 @@ Text:
 
   try {
     const response = await genAI.models.generateContent({
-      model: "gemini-1.5-flash",
+      model: "models/gemini-flash-latest",
       contents: [
         {
           role: "user",
@@ -65,7 +65,6 @@ Text:
 
     const cleaned = raw
       .replace(/```json/g, "")
-      .replace(/```/g, "")
       .trim();
 
     return JSON.parse(cleaned);

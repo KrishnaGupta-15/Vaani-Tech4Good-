@@ -49,7 +49,7 @@ router.post('/', verifyToken, async (req, res) => {
         `;
 
         const response = await genAI.models.generateContent({
-            model: "gemini-2.5-flash",
+            model: "models/gemini-flash-latest",
             contents: [{role:"user",parts:[{text:prompt}]}],
         });
 
@@ -80,8 +80,10 @@ router.post('/', verifyToken, async (req, res) => {
 
         
     }catch(error){
-        console.error('Error generating text:', error);
-        res.status(500).json({ error: 'IFailed to generate text using Gemini AI'
+        console.error("Gemini failed:", error.message);
+        return res.status(200).json({
+            refinedText: text,
+            fallback: true
         });
     }
 });
