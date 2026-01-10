@@ -79,14 +79,7 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
         }
     }, [currentLanguage]);
 
-    // const handleSend = () => {
-    //     if (inputValue.trim()) {
-    //         if (onSendMessage) {
-    //             onSendMessage(inputValue);
-    //         }
-    //         setInputValue("");
-    //     }
-    // };
+    
 
     const handleSend = async () => {
         if (!inputValue.trim()) return;
@@ -102,15 +95,7 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
             console.error("Error in onSendMessage prop:", e);
         }
 
-        // try {
-        //     const geminiReply = await sendToGemini(userText);
-
-        //     if (onSendMessage) {
-        //         onSendMessage(geminiReply, false);
-        //     }
-        // } catch (err) {
-        //     console.error("Gemini failed", err);
-        // }
+       
     };
 
     const toggleMic = () => {
