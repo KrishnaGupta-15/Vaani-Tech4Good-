@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Send, AlertCircle } from 'lucide-react';
 import { getLanguageCode } from '../../utils/languages';
-import { sendToGemini } from "../../utils/geminiClient";
+//import { sendToGemini } from "../../utils/geminiClient";
 function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
     const [inputValue, setInputValue] = useState("");
     const [isListening, setIsListening] = useState(false);
@@ -102,15 +102,15 @@ function ChatInput({ currentLanguage, onSendMessage, highContrast }) {
             console.error("Error in onSendMessage prop:", e);
         }
 
-        try {
-            const geminiReply = await sendToGemini(userText);
+        // try {
+        //     const geminiReply = await sendToGemini(userText);
 
-            if (onSendMessage) {
-                onSendMessage(geminiReply, false);
-            }
-        } catch (err) {
-            console.error("Gemini failed", err);
-        }
+        //     if (onSendMessage) {
+        //         onSendMessage(geminiReply, false);
+        //     }
+        // } catch (err) {
+        //     console.error("Gemini failed", err);
+        // }
     };
 
     const toggleMic = () => {

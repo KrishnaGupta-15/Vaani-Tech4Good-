@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { collection, addDoc, query, orderBy, onSnapshot, serverTimestamp, where, updateDoc } from "firebase/firestore";
 import { onAuthStateChanged } from "firebase/auth";
 import { db, auth } from "./firebase";
@@ -11,8 +11,11 @@ import SettingsDrawer from './components/layout/SettingsDrawer';
 import LandingPage from './components/layout/LandingPage';
 import LoginForm from './components/AuthForm/LoginForm';
 import ChatSidebar from './components/chat/ChatSidebar';
+import CallInterface from './components/chat/CallInterface';
 import { PanelLeftOpen } from 'lucide-react';
 import { getLanguageCode } from './utils/languages';
+import { getCurrentUserId } from './utils/userSession';
+import { SocketContext } from './Context/SocketContext';
 
 
 function App() {
@@ -21,6 +24,9 @@ function App() {
   const [language, setLanguage] = useState('English');
   const [showCallMode, setShowCallMode] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
+
+  const { callAccepted, callEnded } = useContext(SocketContext);
+  const inCall = callAccepted && !callEnded;
 
 
 
@@ -127,7 +133,8 @@ function App() {
 
   const handleSend = async () => {
     alert("DEBUG: ChatInput handleSend");
-    if (!inputValue.trim()) return; tConversationId(null);
+    if (!inputValue.trim()) return;
+    setCurrentConversationId(null);
     setMessages([]);
     // Close sidebar on mobile automatically? Optional.
   };
@@ -164,7 +171,7 @@ function App() {
       // If no conversation selected, CREATE ONE FIRST
       if (!conversationId) {
         const docRef = await addDoc(collection(db, "conversations"), {
-          userId: user ? user.uid : "anonymous",
+          userId: getCurrentUserId(user),
           title: text.slice(0, 30) + (text.length > 30 ? "..." : ""),
           createdAt: serverTimestamp()
         });
@@ -186,7 +193,7 @@ function App() {
         translation: translationContent,
         languageCode: fullLangCode,
         timestamp: serverTimestamp(),
-        userId: user ? user.uid : "anonymous",
+        userId: getCurrentUserId(user),
         type: "text"
       });
 
@@ -263,7 +270,8 @@ function App() {
   if (showLanding) {
     return (
       <LandingPage
-        onGetStarted={() => {setShowLanding(false);
+        onGetStarted={() => {
+          setShowLanding(false);
           setShowLogin(true);
         }}
         onLoginClick={() => {
@@ -276,6 +284,7 @@ function App() {
 
   return (
     <div className={getAppStyles()}>
+      <CallInterface currentLanguage={language} />
 
       {/* Accessibility Settings Drawer */}
       <SettingsDrawer
@@ -287,9 +296,9 @@ function App() {
         setHighContrast={setHighContrast}
       />
 
-      {/* Live Captioning Overlay */}
+      {/* Live Captioning Overlay - Only show if NOT in a call to avoid mic conflicts */}
       <LiveTranscribe
-        isOpen={showCallMode}
+        isOpen={showCallMode && !inCall}
         onClose={() => setShowCallMode(false)}
         currentLanguage={language}
         highContrast={highContrast}

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Plus, MessageSquare, Trash2, X, PanelLeftClose, PanelLeftOpen } from 'lucide-react';
 import { collection, query, where, orderBy, onSnapshot, deleteDoc, doc } from 'firebase/firestore';
 import { db } from '../../firebase';
+import { getCurrentUserId } from '../../utils/userSession';
 
 export default function ChatSidebar({
     isOpen,
@@ -17,7 +18,7 @@ export default function ChatSidebar({
     useEffect(() => {
         if (!db) return;
 
-        const uid = user ? user.uid : "anonymous";
+        const uid = getCurrentUserId(user);
 
         // specific to user
         const q = query(

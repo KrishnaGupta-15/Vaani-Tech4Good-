@@ -2,51 +2,118 @@ import React, { useState, useEffect, useRef } from 'react';
 import { X, Mic, MicOff } from 'lucide-react';
 import { getLanguageCode } from '../../utils/languages';
 
-function LiveTranscribe({ isOpen, onClose, currentLanguage, highContrast }) {
+function LiveTranscribe({ isOpen, onClose, currentLanguage, highContrast, onTranscriptUpdate, onError, onStatusChange }) {
     const [transcript, setTranscript] = useState("");
     const [isListening, setIsListening] = useState(false);
     const recognitionRef = useRef(null);
 
+    const transcriptRef = useRef("");
+    const isActuallyListening = useRef(false);
+
     useEffect(() => {
         if (!isOpen) {
             setTranscript("");
-            setIsListening(false);
+            isActuallyListening.current = false;
+            if (recognitionRef.current) {
+                try { recognitionRef.current.stop(); } catch (e) { }
+            }
             return;
         }
 
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            recognitionRef.current = new SpeechRecognition();
-            recognitionRef.current.continuous = true;
-            recognitionRef.current.interimResults = true;
-            recognitionRef.current.lang = getLanguageCode(currentLanguage);
+        const startRecognition = () => {
+            if (isActuallyListening.current) return;
 
-            recognitionRef.current.onstart = () => setIsListening(true);
-            recognitionRef.current.onend = () => setIsListening(false);
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
-            recognitionRef.current.onresult = (event) => {
-                let final = "";
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        final += event.results[i][0].transcript + " ";
+                if (!recognitionRef.current) {
+                    recognitionRef.current = new SpeechRecognition();
+                    recognitionRef.current.continuous = true;
+                    recognitionRef.current.interimResults = true;
+                }
+
+                recognitionRef.current.lang = getLanguageCode(currentLanguage);
+
+                recognitionRef.current.onstart = () => {
+                    console.log("Speech recognition started");
+                    setIsListening(true);
+                    isActuallyListening.current = true;
+                    if (onStatusChange) onStatusChange("Mic Active");
+                };
+
+                recognitionRef.current.onend = () => {
+                    console.log("Speech recognition ended.");
+                    setIsListening(false);
+                    isActuallyListening.current = false;
+
+                    if (isOpen) {
+                        if (onStatusChange) onStatusChange("Restarting...");
+                        setTimeout(() => {
+                            if (isOpen) startRecognition();
+                        }, 2000); // 2-second delay to be safe
                     }
-                }
-                if (final) {
-                    setTranscript(prev => (prev + final).slice(-500));
-                }
-            };
+                };
 
-            try {
-                recognitionRef.current.start();
-            } catch (e) {
-                console.error("Auto-start failed", e);
+                recognitionRef.current.onresult = (event) => {
+                    if (onStatusChange) onStatusChange("Sound Detected...");
+
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+
+                    if (finalTranscript) {
+                        transcriptRef.current = (transcriptRef.current + " " + finalTranscript).slice(-300);
+                        setTranscript(transcriptRef.current);
+                        if (onTranscriptUpdate) onTranscriptUpdate(transcriptRef.current);
+                    } else if (interimTranscript) {
+                        const tempText = (transcriptRef.current + " " + interimTranscript).slice(-300);
+                        if (onTranscriptUpdate) onTranscriptUpdate(tempText);
+                    }
+                };
+
+                recognitionRef.current.onerror = (event) => {
+                    console.error("Speech Recognition Error:", event.error);
+                    let msg = event.error;
+                    if (event.error === 'aborted') {
+                        msg = "Mic aborted. Close other tabs for this app.";
+                    } else if (event.error === 'not-allowed') {
+                        msg = "Permission denied.";
+                    }
+
+                    if (onError) onError(msg);
+                    if (onStatusChange) onStatusChange("Error: " + event.error);
+
+                    if (event.error === 'not-allowed') {
+                        isActuallyListening.current = true; // Block restart for permission issues
+                    }
+                };
+
+                if (onStatusChange) onStatusChange("Requesting Mic...");
+                try {
+                    recognitionRef.current.start();
+                } catch (e) {
+                    console.error("Immediate start fail", e);
+                    if (onStatusChange) onStatusChange("Start Failed");
+                }
+            } else {
+                if (onStatusChange) onStatusChange("Browser Not Supported");
             }
-        }
+        };
+
+        startRecognition();
 
         return () => {
             if (recognitionRef.current) {
-                recognitionRef.current.stop();
+                try { recognitionRef.current.stop(); } catch (e) { }
             }
+            isActuallyListening.current = false;
         };
     }, [isOpen, currentLanguage]);
 

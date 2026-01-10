@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Mail, Lock, User, ArrowLeft } from 'lucide-react';
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, setPersistence, browserSessionPersistence } from "firebase/auth";
 import { auth } from "../../firebase";
 
 
@@ -23,6 +23,9 @@ export default function LoginForm({ onBack, onLoginSuccess }) {
 
     try {
       let userCredential;
+
+      // Enforce Tab-Only Persistence
+      await setPersistence(auth, browserSessionPersistence);
 
       if (isLogin) {
         // LOGIN

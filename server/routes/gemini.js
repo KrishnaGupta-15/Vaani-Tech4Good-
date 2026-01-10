@@ -81,9 +81,9 @@ router.post('/', verifyToken, async (req, res) => {
         
     }catch(error){
         console.error("Gemini failed:", error.message);
-        return res.status(200).json({
-            refinedText: text,
-            fallback: true
+        return res.status(500).json({
+            error:"Gemini processing failed",
+            fallbackText:text
         });
     }
 });
